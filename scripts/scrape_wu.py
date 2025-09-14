@@ -1,10 +1,11 @@
-
 import asyncio
 import argparse
 import os
 import pandas as pd
+from datetime import datetime, timedelta
 from playwright.async_api import async_playwright
 
+# Function to fetch weather data for a specific date
 async def fetch_weather_table(pws_id, date):
     url = f"https://www.wunderground.com/dashboard/pws/{pws_id}/table/{date}/{date}/daily"
     print(f"[INFO] Target URL: {url}")
@@ -38,9 +39,9 @@ async def fetch_weather_table(pws_id, date):
         rows = await page.eval_on_selector_all(
             "table.history-table.desktop-table tbody tr",
             """els => els.map(row =>
-                Array.from(row.querySelectorAll('td')).map(cell =>
-                    cell.innerText.trim() || cell.textContent.trim()
-                )
+            Array.from(row.querySelectorAll('td')).map(cell =>
+            cell.innerText.trim() || cell.textContent.trim()
+            )
             )"""
         )
 
@@ -56,6 +57,7 @@ async def fetch_weather_table(pws_id, date):
         await browser.close()
         return pd.DataFrame(valid_rows, columns=headers)
 
+# Function to scrape and store weather data for a specific date
 async def scrape_and_store(pws_id, date):
     print(f"[INFO] Starting scrape for PWS ID: {pws_id} on {date}")
     new_data = await fetch_weather_table(pws_id, date)
@@ -65,7 +67,7 @@ async def scrape_and_store(pws_id, date):
         raise ValueError("Missing 'Time' column in scraped data.")
 
     print("[INFO] Parsing and sorting time column...")
-    new_data["Time"] = pd.to_datetime(new_data["Time"], format="%I:%M %p", errors="coerce")
+    new_data["Time"] = pd.to_datetime(date + " " + new_data["Time"], format="%Y-%m-%d %I:%M %p", errors="coerce")
     new_data = new_data.dropna(subset=["Time"])
     new_data = new_data.sort_values("Time")
 
@@ -81,7 +83,7 @@ async def scrape_and_store(pws_id, date):
         from io import StringIO
         existing_df = pd.read_csv(StringIO("".join(data_lines)))
         if "Time" in existing_df.columns:
-            existing_df["Time"] = pd.to_datetime(existing_df["Time"], format="%I:%M %p", errors="coerce")
+            existing_df["Time"] = pd.to_datetime(existing_df["Time"], errors="coerce")
         combined_df = pd.concat([existing_df, new_data]).drop_duplicates(subset=["Time"]).sort_values("Time")
     else:
         print("[INFO] No existing file. Creating new one.")
@@ -93,9 +95,21 @@ async def scrape_and_store(pws_id, date):
         f.writelines(metadata)
         combined_df.to_csv(f, index=False)
 
+# Main execution block
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape Weather Underground PWS data.")
     parser.add_argument("pws_id", type=str, help="Personal Weather Station ID")
-    parser.add_argument("date", type=str, help="Date in YYYY-MM-DD format")
+    parser.add_argument("--start_date", type=str, help="Start date in YYYY-MM-DD format")
+    parser.add_argument("--end_date", type=str, help="End date in YYYY-MM-DD format")
     args = parser.parse_args()
-    asyncio.run(scrape_and_store(args.pws_id, args.date))
+
+    if args.start_date and args.end_date:
+        start = datetime.strptime(args.start_date, "%Y-%m-%d")
+        end = datetime.strptime(args.end_date, "%Y-%m-%d")
+        current = start
+        while current <= end:
+            asyncio.run(scrape_and_store(args.pws_id, current.strftime("%Y-%m-%d")))
+            current += timedelta(days=1)
+    else:
+        raise ValueError("Both --start_date and --end_date must be provided.")
+

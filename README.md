@@ -26,3 +26,30 @@ These can be accessed via the Environment Agency's [Hydrology Data Explorer](htt
 |[Bacup](https://environment.data.gov.uk/hydrology/station/3e0e16e2-862e-403a-8097-24648a6e3a3b)|3e0e16e2-862e-403a-8097-24648a6e3a3b|
 |[Gorple](https://environment.data.gov.uk/hydrology/station/b71f87b9-99fc-4d54-bc8e-f1820ac74c94)|b71f87b9-99fc-4d54-bc8e-f1820ac74c94|
 |[Walshaw Dean Lodge](https://environment.data.gov.uk/hydrology/station/445f2262-65b1-4904-9587-c9bdfea18d50)|445f2262-65b1-4904-9587-c9bdfea18d50|
+
+
+### Weather Underground Personal Weather Stations
+some links and stuff to explain wu
+
+#### Weather Underground PWS Scraper
+
+`scrape_wu.py` is a Python script designed to scrape fine-grained weather data from Weather Underground personal weather station (PWS) pages for a specific date or a range of dates.
+
+#### Features
+
+- Scrapes 5 minute weather data from Weather Underground's dashboard table.
+- Supports scraping for a single date or a range of dates.
+- Converts temperature values from Fahrenheit to Celsius.
+- Parses and sorts time values correctly with full date context.
+- Merges new data with existing CSV files, avoiding duplicates.
+- Saves output to `data/weather/wu/{PWS_ID}.csv`.
+- Provides verbose logging for debugging and progress tracking.
+
+
+## Requirements
+
+- Python 3.7+
+- Playwright
+- Pandas
+
+Install dependencies using pip:
