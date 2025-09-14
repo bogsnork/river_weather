@@ -7,3 +7,6 @@ dependencies:
   - plotly
   - ipywidgets
   - jupyterlab
+  - pip  
+    - asyncio
+    - playwright #need to also run 'install playwright', not sure how
