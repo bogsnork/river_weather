@@ -13,12 +13,11 @@ async def fetch_weather_table(pws_id, date):
     async with async_playwright() as p:
         print("[INFO] Launching browser...")
         browser = await p.chromium.launch(headless=True, args=["--ignore-certificate-errors"])
-        print("[SUCCESS] Browser launched.")
+        # print("[SUCCESS] Browser launched.")
         page = await browser.new_page()
         print("[INFO] Navigating to page...")
         await page.goto(url, timeout=60000)
-        print("[SUCCESS] Page loaded.")
-        print("[INFO] Waiting for desktop table rows to appear...")
+        print("[SUCCESS] Page loaded.  [INFO] Waiting for desktop table rows to appear...")
 
         try:
             await page.wait_for_selector("table.history-table.desktop-table tbody tr", state="attached", timeout=30000)
@@ -35,7 +34,7 @@ async def fetch_weather_table(pws_id, date):
         )
         print("[SUCCESS] Headers found:", headers)
 
-        print("[INFO] Extracting table rows using Strategy 5 (innerText with fallback)...")
+        print("[INFO] Extracting table rows using innerText with fallback ...")
         rows = await page.eval_on_selector_all(
             "table.history-table.desktop-table tbody tr",
             """els => els.map(row =>
@@ -94,6 +93,7 @@ async def scrape_and_store(pws_id, date):
     with open(file_path, "w") as f:
         f.writelines(metadata)
         combined_df.to_csv(f, index=False)
+    print(f"[INFO] -------- Done! --------")
 
 # Main execution block
 if __name__ == "__main__":
@@ -106,10 +106,15 @@ if __name__ == "__main__":
     if args.start_date and args.end_date:
         start = datetime.strptime(args.start_date, "%Y-%m-%d")
         end = datetime.strptime(args.end_date, "%Y-%m-%d")
-        current = start
-        while current <= end:
-            asyncio.run(scrape_and_store(args.pws_id, current.strftime("%Y-%m-%d")))
-            current += timedelta(days=1)
+        if end < start:
+            raise ValueError("--start_date must be earlier than --end_date")
+        elif start < end:
+            current = start
+            while current <= end:
+                asyncio.run(scrape_and_store(args.pws_id, current.strftime("%Y-%m-%d")))
+                current += timedelta(days=1)
+        elif start == end:
+            raise ValueError("single date scraping not implemented.  Provide a bracket of at least 2 days.")
     else:
         raise ValueError("Both --start_date and --end_date must be provided.")
 
