@@ -36,7 +36,7 @@ PWS can be discovered using [Wundermap](https://www.wunderground.com/wundermap).
 | Station Name | Station ID | Location |
 |---|---|---|
 |[Brown Birks Tod](https://www.wunderground.com/dashboard/pws/ITODMO10)|ITODMO10|Todmorden|
-|[Home](https://www.wunderground.com/dashboard/pws/IHEBDE12)|Hebden Bridge|
+|[Home](https://www.wunderground.com/dashboard/pws/IHEBDE12)|IHEBDE12|Hebden Bridge|
 |[Kilnhurst Todmorden](https://www.wunderground.com/dashboard/pws/ICALDERD3)|ICALDERD3|Todmorden|
 |[Todmorden Cross Stone](https://www.wunderground.com/dashboard/pws/ITODMORD3)|ITODMORD3|Todmorden|
 
