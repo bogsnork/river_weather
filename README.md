@@ -28,7 +28,7 @@ These can be accessed via the Environment Agency's [Hydrology Data Explorer](htt
 |[Walshaw Dean Lodge](https://environment.data.gov.uk/hydrology/station/445f2262-65b1-4904-9587-c9bdfea18d50)|445f2262-65b1-4904-9587-c9bdfea18d50|
 
 
-### Weather Underground Personal Weather Stations
+### Weather Underground personal weather stations
 Weather Underground providing hosting for data streamed from personal weather stations (PWS).  Each PWS has a page with the ability to display daily, weekly or monthly data for a given time.  Unfortunately the API is now only available to members with a weather station so we have to scrape the data.  See below for a script to help with that.  
 
 PWS can be discovered using [Wundermap](https://www.wunderground.com/wundermap).  Click on the icon and then on the 'station id'.   Each PWS has its own 'dashboard' page, e.g. https://www.wunderground.com/dashboard/pws/ICALDERD3.  The most fine grained data is termed 'daily' which is selectable per day.  It appears to be in five minute intervals but this might be different for each weather station.    Some examples are: 
@@ -43,6 +43,6 @@ PWS can be discovered using [Wundermap](https://www.wunderground.com/wundermap).
 `scrape_wu.py` is a Python script designed to scrape daily weather data from Weather Underground personal weather station (PWS) pages for a specific date or a range of dates. The script
 - Scrapes 5 minute weather data from Weather Underground's dashboard table.
 - Supports scraping a range of dates (single dates not implemented yet).
-- Converts temperature values from Fahrenheit to Celsius.
+- [TODO: Converts temperature values from Fahrenheit to Celsius.]
 - Merges new data with existing CSV files, avoiding duplicates.
 - Saves output to `data/weather/wu/{PWS_ID}.csv`.
